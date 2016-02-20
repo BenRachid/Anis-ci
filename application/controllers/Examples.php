@@ -91,6 +91,7 @@ class Examples extends CI_Controller {
 			"pdv" => $primary_key,
 			"date_creation" => date('Y-m-d H:i:s'),
 			"date_modification" => date('Y-m-d H:i:s'),
+			"password" => $this->generatePwd(),
 		);
 		$this->db->update('nouveaupdv',$user_logs_update,array('pdv' => $primary_key));
 		return true;
@@ -105,6 +106,20 @@ class Examples extends CI_Controller {
 		return true;
 	}
 	
+	protected function generatePwd(){
+		$chars = "azertyuiopqsdfghjklmwxcvbn0123456789";
+		$lenght = strlen($chars);
+		$chars = str_split($chars,1);
+		$pwd = "";
+		for($i=0;$i<9;$i++){
+			shuffle($chars);
+			$pwd .= $chars[rand(0,($lenght-1))];
+		}
+		return $pwd;
+	}
+	
+
+	
 	// public function date_Start($value, $row)
 	// {
 		// $this->load->helper('date');
@@ -115,66 +130,6 @@ class Examples extends CI_Controller {
 		// return $value;
 	 // }
 	
-	public function film_management_twitter_bootstrap()
-	{
-		try{
-			$crud = new grocery_CRUD();
-
-			$crud->set_theme('twitter-bootstrap');
-			$crud->set_table('nouveaupdv');
-			// $crud->set_relation_n_n('actors', 'film_actor', 'actor', 'film_id', 'actor_id', 'fullname','priority');
-			// $crud->set_relation_n_n('category', 'film_category', 'category', 'film_id', 'category_id', 'name');
-			$crud->unset_columns('special_features','description','actors');
-
-			$crud->fields('pdv', 'raison_sociale', 'type_pdv', 'adresse_pdv', 'wilaya_pdv', 'commune_pdv', 'msisdn', 'autre_telephone_pdv', 'email_pdv', 'password', 'code_vendeur', 'Statue', 'date_creation', 'date_modification');
-
-			$output = $crud->render();
-			$this->_example_output($output);
-
-		}catch(Exception $e){
-			show_error($e->getMessage().' --- '.$e->getTraceAsString());
-		}
-	}
-
-	function multigrids()
-	{
-		$this->config->load('grocery_crud');
-		$this->config->set_item('grocery_crud_dialog_forms',true);
-		$this->config->set_item('grocery_crud_default_per_page',10);
-
-		$output1 = $this->offices_management2();
-
-		$output2 = $this->employees_management2();
-
-		$output3 = $this->customers_management2();
-
-		$js_files = $output1->js_files + $output2->js_files + $output3->js_files;
-		$css_files = $output1->css_files + $output2->css_files + $output3->css_files;
-		$output = "<h1>List 1</h1>".$output1->output."<h1>List 2</h1>".$output2->output."<h1>List 3</h1>".$output3->output;
-
-		$this->_example_output((object)array(
-				'js_files' => $js_files,
-				'css_files' => $css_files,
-				'output'	=> $output
-		));
-	}
-
-	public function offices_management2()
-	{
-		$crud = new grocery_CRUD();
-		$crud->set_table('nouveaupdv');
-		$crud->set_subject('nouveaupdv');
-
-		$crud->set_crud_url_path(site_url(strtolower(__CLASS__."/".__FUNCTION__)),site_url(strtolower(__CLASS__."/multigrids")));
-
-		$output = $crud->render();
-
-		if($crud->getState() != 'list') {
-			$this->_example_output($output);
-		} else {
-			return $output;
-		}
-	}
 
 
 }
