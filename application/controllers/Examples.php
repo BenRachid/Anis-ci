@@ -38,10 +38,13 @@ class Examples extends CI_Controller {
 			$crud->set_table('nouveaupdv');
 			$crud->set_subject('Point de Vente');
 			$crud->required_fields('pdv','raison_sociale', 'type_pdv','msisdn', 'wilaya_pdv', 'commune_pdv', 'email_pdv', 'code_vendeur', 'code_vendeur', 'Statue');
-			$crud->unique_fields('pdv','msisdn', 'email_pdv', 'code_vendeur');
+			$crud->unique_fields('pdv','msisdn', 'code_vendeur');
 			$crud->columns('code_vendeur', 'raison_sociale', 'type_pdv', 'adresse_pdv', 'wilaya_pdv', 'commune_pdv', 'msisdn', 'autre_telephone_pdv', 'email_pdv', 'Statue','date_creation', 'date_modification');
 			$crud->fields('code_vendeur', 'raison_sociale', 'type_pdv', 'adresse_pdv', 'wilaya_pdv', 'commune_pdv', 'msisdn', 'autre_telephone_pdv', 'email_pdv', 'Statue');
 			$crud->unset_texteditor('adresse_pdv');
+			
+			$crud->set_rules('email_pdv','Email','required|valid_email|is_unique[nouveaupdv.email_pdv]');			
+			
 			$crud->display_as('code_vendeur','Code du vendeur');
 			$crud->display_as('raison_sociale','Raison sociale');
 			$crud->display_as('msisdn','MSISDN PDV');
@@ -58,6 +61,7 @@ class Examples extends CI_Controller {
 			// $crud->callback_add_field('date_creation',array($this,'date_Start'));
 			// $crud->callback_edit_field('date_modification',array($this,'date_Edit'));
 			$crud->callback_before_update(array($this,'encrypt_password_callback'));
+			$crud->field_type('wilaya_pdv','dropdown', $this->get_Wilaya(),1);
 			$output = $crud->render();
 			$this->_example_output($output);
 		}catch(Exception $e){
@@ -118,7 +122,59 @@ class Examples extends CI_Controller {
 		return $pwd;
 	}
 	
-
+	function get_Wilaya(){
+		$i=0;
+		$arr= array();
+		$arr [$i++]="Adrar";
+		$arr [$i++]="Chlef";
+		$arr [$i++]="Laghouat";
+		$arr [$i++]="Oum El Bouaghi";
+		$arr [$i++]="Batna";
+		$arr [$i++]="Béjaïa";
+		$arr [$i++]="Biskra";
+		$arr [$i++]="Béchar";
+		$arr [$i++]="Blida";
+		$arr [$i++]="Bouira";
+		$arr [$i++]="Tamanrasset";
+		$arr [$i++]="Tébessa";
+		$arr [$i++]="Tlemcen";
+		$arr [$i++]="Tiaret";
+		$arr [$i++]="Tizi Ouzou ";
+		$arr [$i++]="Alger";
+		$arr [$i++]="Djelfa";
+		$arr [$i++]="Jijel";
+		$arr [$i++]="Sétif";
+		$arr [$i++]="Saïda";
+		$arr [$i++]="Skikda";
+		$arr [$i++]="Sidi Bel Abbès";
+		$arr [$i++]="Annaba";
+		$arr [$i++]="Guelma";
+		$arr [$i++]="Constantine";
+		$arr [$i++]="Médéa";
+		$arr [$i++]="Mostaganem";
+		$arr [$i++]="M'Sila";
+		$arr [$i++]="Mascara";
+		$arr [$i++]="Ouargla";
+		$arr [$i++]="Oran";
+		$arr [$i++]="El Bayadh";
+		$arr [$i++]="Illizi";
+		$arr [$i++]="Bordj Bou Arreridj";
+		$arr [$i++]="Boumerdès";
+		$arr [$i++]="El Tarf";
+		$arr [$i++]="Tindouf";
+		$arr [$i++]="Tissemsilt";
+		$arr [$i++]="El Oued";
+		$arr [$i++]="Khenchela";
+		$arr [$i++]="Souk Ahras";
+		$arr [$i++]="Tipaza";
+		$arr [$i++]="Mila";
+		$arr [$i++]="Aïn Defla";
+		$arr [$i++]="Naâma";
+		$arr [$i++]="Aïn Témouchent";
+		$arr [$i++]="Ghardaïa";
+		$arr [$i++]="Relizane";
+		return $arr;
+	}
 	
 	// public function date_Start($value, $row)
 	// {
