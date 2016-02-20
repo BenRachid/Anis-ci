@@ -29,8 +29,8 @@ a:hover
 </head>
 <body>
 	<div>
-		<a href='<?php echo site_url('ooredooo/Login')?>'>Connexion</a>
-		<a href='<?php echo site_url('ooredooo/pdv_management')?>'>Gestion des points de ventes</a>
+		<a href='<?php echo site_url('ooredoo/Login')?>'>Connexion</a>
+		<a href='<?php echo site_url('ooredoo/pdv_management')?>'>Gestion des points de ventes</a>
 	</div>
 	<div style='height:20px;'></div>  
     <div>
