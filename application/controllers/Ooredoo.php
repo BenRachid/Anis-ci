@@ -66,10 +66,16 @@ class Ooredoo extends CI_Controller {
 			$crud->callback_after_insert(array($this, 'log_user_after_insert'));
 			$crud->callback_after_update(array($this, 'log_user_after_update'));
 			$crud->callback_before_update(array($this,'encrypt_password_callback'));
-			
-			$crud->field_type('wilaya_pdv','dropdown', $this->get_Wilaya(),1);
-			$crud->field_type('Statue','dropdown',array('0'=>'inactif','1' => 'actif'),0);
-
+			//$crud->field_type('password','hidden');
+			$crud->field_type('wilaya_pdv','dropdown', $this->get_Wilaya(),'Adrar');
+			$crud->field_type('Statue','dropdown',array('Inactif'=>'Inactif','Actif' => 'Actif'),'Inactif');
+			/*
+			if(#!ADMIN){
+			$crud->unset_operations();
+			}
+			*/
+			$crud->unset_export();
+			$crud->unset_print();
 			$output = $crud->render();
 			$this->_example_output($output);
 		}catch(Exception $e){
@@ -172,54 +178,54 @@ class Ooredoo extends CI_Controller {
 	function get_Wilaya(){
 		$i=0;
 		$arr= array();
-		$arr [$i++]="Adrar";
-		$arr [$i++]="Chlef";
-		$arr [$i++]="Laghouat";
-		$arr [$i++]="Oum El Bouaghi";
-		$arr [$i++]="Batna";
-		$arr [$i++]="B&eacute;ja&Iuml;a";
-		$arr [$i++]="Biskra";
-		$arr [$i++]="B&eacute;char";
-		$arr [$i++]="Blida";
-		$arr [$i++]="Bouira";
-		$arr [$i++]="Tamanrasset";
-		$arr [$i++]="T&eacute;bessa";
-		$arr [$i++]="Tlemcen";
-		$arr [$i++]="Tiaret";
-		$arr [$i++]="Tizi Ouzou ";
-		$arr [$i++]="Alger";
-		$arr [$i++]="Djelfa";
-		$arr [$i++]="Jijel";
-		$arr [$i++]="S&eacute;tif";
-		$arr [$i++]="Sa&Iuml;da";
-		$arr [$i++]="Skikda";
-		$arr [$i++]="Sidi Bel Abb&egrave;s";
-		$arr [$i++]="Annaba";
-		$arr [$i++]="Guelma";
-		$arr [$i++]="Constantine";
-		$arr [$i++]="M&eacute;d&eacute;a";
-		$arr [$i++]="Mostaganem";
-		$arr [$i++]="M'Sila";
-		$arr [$i++]="Mascara";
-		$arr [$i++]="Ouargla";
-		$arr [$i++]="Oran";
-		$arr [$i++]="El Bayadh";
-		$arr [$i++]="Illizi";
-		$arr [$i++]="Bordj Bou Arreridj";
-		$arr [$i++]="Boumerd&egrave;s";
-		$arr [$i++]="El Tarf";
-		$arr [$i++]="Tindouf";
-		$arr [$i++]="Tissemsilt";
-		$arr [$i++]="El Oued";
-		$arr [$i++]="Khenchela";
-		$arr [$i++]="Souk Ahras";
-		$arr [$i++]="Tipaza";
-		$arr [$i++]="Mila";
-		$arr [$i++]="A&Iuml;n Defla";
-		$arr [$i++]="Na&acirc;ma";
-		$arr [$i++]="A&Iuml;n T&eacute;mouchent";
-		$arr [$i++]="Gharda&Iuml;a";
-		$arr [$i++]="Relizane";
+		$arr ["Adrar"]="Adrar";
+		$arr ["Chlef"]="Chlef";
+		$arr ["Laghouat"]="Laghouat";
+		$arr ["Oum El Bouaghi"]="Oum El Bouaghi";
+		$arr ["Batna"]="Batna";
+		$arr ["B&eacute;ja&Iuml;a"]="B&eacute;ja&Iuml;a";
+		$arr ["Biskra"]="Biskra";
+		$arr ["B&eacute;char"]="B&eacute;char";
+		$arr ["Blida"]="Blida";
+		$arr ["Bouira"]="Bouira";
+		$arr ["Tamanrasset"]="Tamanrasset";
+		$arr ["T&eacute;bessa"]="T&eacute;bessa";
+		$arr ["Tlemcen"]="Tlemcen";
+		$arr ["Tiaret"]="Tiaret";
+		$arr ["Tizi Ouzou"]="Tizi Ouzou";
+		$arr ["Alger"]="Alger";
+		$arr ["Djelfa"]="Djelfa";
+		$arr ["Jijel"]="Jijel";
+		$arr ["S&eacute;tif"]="S&eacute;tif";
+		$arr ["Sa&Iuml;da"]="Sa&Iuml;da";
+		$arr ["Skikda"]="Skikda";
+		$arr ["Sidi Bel Abb&egrave;s"]="Sidi Bel Abb&egrave;s";
+		$arr ["Annaba"]="Annaba";
+		$arr ["Guelma"]="Guelma";
+		$arr ["Constantine"]="Constantine";
+		$arr ["M&eacute;d&eacute;a"]="M&eacute;d&eacute;a";
+		$arr ["Mostaganem"]="Mostaganem";
+		$arr ["M'Sila"]="M'Sila";
+		$arr ["Mascara"]="Mascara";
+		$arr ["Ouargla"]="Ouargla";
+		$arr ["Oran"]="Oran";
+		$arr ["El Bayadh"]="El Bayadh";
+		$arr ["Illizi"]="Illizi";
+		$arr ["Bordj Bou Arreridj"]="Bordj Bou Arreridj";
+		$arr ["Boumerd&egrave;s"]="Boumerd&egrave;s";
+		$arr ["El Tarf"]="El Tarf";
+		$arr ["Tindouf"]="Tindouf";
+		$arr ["Tissemsilt"]="Tissemsilt";
+		$arr ["El Oued"]="El Oued";
+		$arr ["Khenchela"]="Khenchela";
+		$arr ["Souk Ahras"]="Souk Ahras";
+		$arr ["Tipaza"]="Tipaza";
+		$arr ["Mila"]="Mila";
+		$arr ["A&Iuml;n Defla"]="A&Iuml;n Defla";
+		$arr ["Na&acirc;ma"]="Na&acirc;ma";
+		$arr ["A&Iuml;n T&eacute;mouchent"]="A&Iuml;n T&eacute;mouchent";
+		$arr ["Gharda&Iuml;a"]="Gharda&Iuml;a";
+		$arr ["Relizane"]="Relizane";
 		return $arr;
 	}
 
