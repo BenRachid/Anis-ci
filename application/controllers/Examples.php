@@ -58,10 +58,11 @@ class Examples extends CI_Controller {
 			$crud->display_as('pdv','PDV');
 			$crud->callback_after_insert(array($this, 'log_user_after_insert'));
 			$crud->callback_after_update(array($this, 'log_user_after_update'));
-			// $crud->callback_add_field('date_creation',array($this,'date_Start'));
-			// $crud->callback_edit_field('date_modification',array($this,'date_Edit'));
 			$crud->callback_before_update(array($this,'encrypt_password_callback'));
+			
 			$crud->field_type('wilaya_pdv','dropdown', $this->get_Wilaya(),1);
+			$crud->field_type('Statue','dropdown',array('0'=>'inactif','1' => 'actif'),0);
+
 			$output = $crud->render();
 			$this->_example_output($output);
 		}catch(Exception $e){
