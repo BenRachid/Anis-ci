@@ -53,8 +53,11 @@ class Examples extends CI_Controller {
 			$crud->display_as('commune_pdv','Commune PDV');
 			$crud->display_as('wilaya_pdv','Wilaya PDV');
 			$crud->display_as('pdv','PDV');
-			// $crud->callback_column('date_creation',array($this,'date_Start'));
-			// $crud->callback_column('date_modification',array($this,'date_Start'));
+			$crud->callback_after_insert(array($this, 'log_user_after_insert'));
+			$crud->callback_after_update(array($this, 'log_user_after_update'));
+			// $crud->callback_add_field('date_creation',array($this,'date_Start'));
+			// $crud->callback_edit_field('date_modification',array($this,'date_Edit'));
+			$crud->callback_before_update(array($this,'encrypt_password_callback'));
 			$output = $crud->render();
 			$this->_example_output($output);
 		}catch(Exception $e){
@@ -62,19 +65,55 @@ class Examples extends CI_Controller {
 		}
 	}
 	
+	function encrypt_password_callback($post_array, $primary_key) {
+		$this->load->library('encrypt');
+		//Encrypt password only if is not empty. Else don't change the password to an empty field
+		if(!empty($post_array['password']))
+		{
+			$key = 'super-secret-key';
+			$post_array['password'] = $this->encrypt->encode($post_array['password'], $key);
+		}
+		else
+		{
+			unset($post_array['password']);
+		}
+		 
+		return $post_array;
+	}
 	public function valueToEuro($value, $row)
 	{
 		return $value.' &euro;';
 	}
+	
+	function log_user_after_insert($post_array,$primary_key)
+	{
+		$user_logs_update = array(
+			"pdv" => $primary_key,
+			"date_creation" => date('Y-m-d H:i:s'),
+			"date_modification" => date('Y-m-d H:i:s'),
+		);
+		$this->db->update('nouveaupdv',$user_logs_update,array('pdv' => $primary_key));
+		return true;
+	}
+	function log_user_after_update($post_array,$primary_key)
+	{
+		$user_logs_update = array(
+			"pdv" => $primary_key,
+			"date_modification" => date('Y-m-d H:i:s')
+		);
+		$this->db->update('nouveaupdv',$user_logs_update,array('pdv' => $primary_key));
+		return true;
+	}
+	
 	// public function date_Start($value, $row)
 	// {
 		// $this->load->helper('date');
-		// if(!isset($value))
-		// {
-			// return now();
-		// }
-		// return $value.' &euro;';
-	// }
+		// if(!empty($post_array['password']))
+		// {}
+		// $value= mdate('%d/%m/%Y - %h:%i %a',now());
+		// echo $value;
+		// return $value;
+	 // }
 	
 	public function film_management_twitter_bootstrap()
 	{
