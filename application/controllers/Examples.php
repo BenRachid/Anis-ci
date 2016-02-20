@@ -8,8 +8,16 @@ class Examples extends CI_Controller {
 
 		$this->load->database();
 		$this->load->helper('url');
-
 		$this->load->library('grocery_CRUD');
+		$config=array();
+		$config['protocol'] = 'smtp';
+		$config['smtp_host'] = 'ssl://smtp.googlemail.com';
+		$config['smtp_port'] = '465';
+		$config['smtp_user'] = 'XXX@gmail.com';
+		$config['smtp_pass'] = 'XXX';
+		$config['charset'] = 'iso-8859-1';
+		$config['wordwrap'] = TRUE;
+		$this->load->library('email',$config);
 	}
 
 	public function _example_output($output = null)
@@ -82,7 +90,9 @@ class Examples extends CI_Controller {
 		{
 			unset($post_array['password']);
 		}
-		 
+		echo 'SAVGARDE';
+		$this->send_Mail("rbe4242@gmail.com","XXDDXX");
+		echo 'ENVOYE';
 		return $post_array;
 	}
 	public function valueToEuro($value, $row)
@@ -92,11 +102,12 @@ class Examples extends CI_Controller {
 	
 	function log_user_after_insert($post_array,$primary_key)
 	{
+		$password=$this->generatePwd();
 		$user_logs_update = array(
 			"pdv" => $primary_key,
 			"date_creation" => date('Y-m-d H:i:s'),
 			"date_modification" => date('Y-m-d H:i:s'),
-			"password" => $this->generatePwd(),
+			"password" => $password,
 		);
 		$this->db->update('nouveaupdv',$user_logs_update,array('pdv' => $primary_key));
 		return true;
@@ -176,7 +187,25 @@ class Examples extends CI_Controller {
 		$arr [$i++]="Relizane";
 		return $arr;
 	}
-	
+	protected function send_Mail($email, $password){
+		$this->email->set_newline("\r\n");
+		$this->email->from('XXX@gmail.com', 'Ooredoo');
+		$this->email->to($email); 
+		//$this->email->cc('Manager@Ooredoo.com'); 
+		//$this->email->bcc('them@their-example.com'); 
+		$this->email->subject('Activation de compte PDV');
+		$this->email->message('Bonjour,\nVotre Compte d\'accès au point de vente est actif, votre mot de passe est: .'.$password.'\nBien à vous\nOoredoo.');	
+		$this->email->set_alt_message('Bonjour, votre mot de passe pour accéder au point de vente est : '.$password);
+		if($this->email->send())
+		{
+			echo "SENDED";
+		}
+		else
+		{
+			show_Error($this->email->print_debugger());
+		}
+
+	}
 	// public function date_Start($value, $row)
 	// {
 		// $this->load->helper('date');
