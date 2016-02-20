@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Examples extends CI_Controller {
+class Ooredoo extends CI_Controller {
 
 	public function __construct()
 	{
@@ -16,13 +16,12 @@ class Examples extends CI_Controller {
 		$config['smtp_user'] = 'XXX@gmail.com';
 		$config['smtp_pass'] = 'XXX';
 		$config['charset'] = 'iso-8859-1';
-		$config['wordwrap'] = TRUE;
 		$this->load->library('email',$config);
 	}
 
 	public function _example_output($output = null)
 	{
-		$this->load->view('example.php',$output);
+		$this->load->view('ooredoo.php',$output);
 	}
 
 	public function offices()
@@ -46,12 +45,12 @@ class Examples extends CI_Controller {
 			$crud->set_table('nouveaupdv');
 			$crud->set_subject('Point de Vente');
 			$crud->required_fields('pdv','raison_sociale', 'type_pdv','msisdn', 'wilaya_pdv', 'commune_pdv', 'email_pdv', 'code_vendeur', 'code_vendeur', 'Statue');
-			$crud->unique_fields('pdv','msisdn', 'code_vendeur');
+			$crud->unique_fields('pdv','msisdn', 'code_vendeur','email_pdv');
 			$crud->columns('code_vendeur', 'raison_sociale', 'type_pdv', 'adresse_pdv', 'wilaya_pdv', 'commune_pdv', 'msisdn', 'autre_telephone_pdv', 'email_pdv', 'Statue','date_creation', 'date_modification');
 			$crud->fields('code_vendeur', 'raison_sociale', 'type_pdv', 'adresse_pdv', 'wilaya_pdv', 'commune_pdv', 'msisdn', 'autre_telephone_pdv', 'email_pdv', 'Statue');
 			$crud->unset_texteditor('adresse_pdv');
 			
-			$crud->set_rules('email_pdv','Email','required|valid_email|is_unique[nouveaupdv.email_pdv]');			
+			$crud->set_rules('email_pdv','Email','valid_email');			
 			
 			$crud->display_as('code_vendeur','Code du vendeur');
 			$crud->display_as('raison_sociale','Raison sociale');
@@ -90,9 +89,6 @@ class Examples extends CI_Controller {
 		{
 			unset($post_array['password']);
 		}
-		echo 'SAVGARDE';
-		$this->send_Mail("rbe4242@gmail.com","XXDDXX");
-		echo 'ENVOYE';
 		return $post_array;
 	}
 	public function valueToEuro($value, $row)
@@ -110,6 +106,20 @@ class Examples extends CI_Controller {
 			"password" => $password,
 		);
 		$this->db->update('nouveaupdv',$user_logs_update,array('pdv' => $primary_key));
+		
+		//$this->load->database();
+		//$this->db->get_where('nouveaupdv',array('pdv' => $primary_key));
+		$data = array();
+		$this->db->where('pdv',$primary_key);
+		$this->db->limit(1);
+		$Q = $this->db->get('nouveaupdv');
+		if ($Q->num_rows() < 1){
+			show_Error("No Result");
+			return false;
+		}
+		$data = $Q->row_array();
+		$this->send_Create_Mail($primary_key, $data['email_pdv'],$password);
+		$Q->free_result();
 		return true;
 	}
 	function log_user_after_update($post_array,$primary_key)
@@ -134,73 +144,16 @@ class Examples extends CI_Controller {
 		return $pwd;
 	}
 	
-	function get_Wilaya(){
-		$i=0;
-		$arr= array();
-		$arr [$i++]="Adrar";
-		$arr [$i++]="Chlef";
-		$arr [$i++]="Laghouat";
-		$arr [$i++]="Oum El Bouaghi";
-		$arr [$i++]="Batna";
-		$arr [$i++]="Béjaïa";
-		$arr [$i++]="Biskra";
-		$arr [$i++]="Béchar";
-		$arr [$i++]="Blida";
-		$arr [$i++]="Bouira";
-		$arr [$i++]="Tamanrasset";
-		$arr [$i++]="Tébessa";
-		$arr [$i++]="Tlemcen";
-		$arr [$i++]="Tiaret";
-		$arr [$i++]="Tizi Ouzou ";
-		$arr [$i++]="Alger";
-		$arr [$i++]="Djelfa";
-		$arr [$i++]="Jijel";
-		$arr [$i++]="Sétif";
-		$arr [$i++]="Saïda";
-		$arr [$i++]="Skikda";
-		$arr [$i++]="Sidi Bel Abbès";
-		$arr [$i++]="Annaba";
-		$arr [$i++]="Guelma";
-		$arr [$i++]="Constantine";
-		$arr [$i++]="Médéa";
-		$arr [$i++]="Mostaganem";
-		$arr [$i++]="M'Sila";
-		$arr [$i++]="Mascara";
-		$arr [$i++]="Ouargla";
-		$arr [$i++]="Oran";
-		$arr [$i++]="El Bayadh";
-		$arr [$i++]="Illizi";
-		$arr [$i++]="Bordj Bou Arreridj";
-		$arr [$i++]="Boumerdès";
-		$arr [$i++]="El Tarf";
-		$arr [$i++]="Tindouf";
-		$arr [$i++]="Tissemsilt";
-		$arr [$i++]="El Oued";
-		$arr [$i++]="Khenchela";
-		$arr [$i++]="Souk Ahras";
-		$arr [$i++]="Tipaza";
-		$arr [$i++]="Mila";
-		$arr [$i++]="Aïn Defla";
-		$arr [$i++]="Naâma";
-		$arr [$i++]="Aïn Témouchent";
-		$arr [$i++]="Ghardaïa";
-		$arr [$i++]="Relizane";
-		return $arr;
-	}
-	protected function send_Mail($email, $password){
+	protected function send_Create_Mail($pdv, $email, $password){
 		$this->email->set_newline("\r\n");
-		$this->email->from('XXX@gmail.com', 'Ooredoo');
+		$this->email->from('ooredoo@gmail.com', 'Ooredoo');
 		$this->email->to($email); 
 		//$this->email->cc('Manager@Ooredoo.com'); 
 		//$this->email->bcc('them@their-example.com'); 
 		$this->email->subject('Activation de compte PDV');
-		$this->email->message('Bonjour,\nVotre Compte d\'accès au point de vente est actif, votre mot de passe est: .'.$password.'\nBien à vous\nOoredoo.');	
-		$this->email->set_alt_message('Bonjour, votre mot de passe pour accéder au point de vente est : '.$password);
-		if($this->email->send())
-		{
-			echo "SENDED";
-		}
-		else
+		$this->email->message("Bonjour,\r\nVotre Compte d'acc&egrave;s au point de vente ".$pdv." est actif, votre mot de passe est: ".$password."\r\nBien à vous\nOoredoo.");	
+		$this->email->set_alt_message('Bonjour, votre mot de passe pour acc&eacute;der au point de vente est : '.$password);
+		if(!$this->email->send())
 		{
 			show_Error($this->email->print_debugger());
 		}
@@ -216,6 +169,59 @@ class Examples extends CI_Controller {
 		// return $value;
 	 // }
 	
+	function get_Wilaya(){
+		$i=0;
+		$arr= array();
+		$arr [$i++]="Adrar";
+		$arr [$i++]="Chlef";
+		$arr [$i++]="Laghouat";
+		$arr [$i++]="Oum El Bouaghi";
+		$arr [$i++]="Batna";
+		$arr [$i++]="B&eacute;ja&Iuml;a";
+		$arr [$i++]="Biskra";
+		$arr [$i++]="B&eacute;char";
+		$arr [$i++]="Blida";
+		$arr [$i++]="Bouira";
+		$arr [$i++]="Tamanrasset";
+		$arr [$i++]="T&eacute;bessa";
+		$arr [$i++]="Tlemcen";
+		$arr [$i++]="Tiaret";
+		$arr [$i++]="Tizi Ouzou ";
+		$arr [$i++]="Alger";
+		$arr [$i++]="Djelfa";
+		$arr [$i++]="Jijel";
+		$arr [$i++]="S&eacute;tif";
+		$arr [$i++]="Sa&Iuml;da";
+		$arr [$i++]="Skikda";
+		$arr [$i++]="Sidi Bel Abb&egrave;s";
+		$arr [$i++]="Annaba";
+		$arr [$i++]="Guelma";
+		$arr [$i++]="Constantine";
+		$arr [$i++]="M&eacute;d&eacute;a";
+		$arr [$i++]="Mostaganem";
+		$arr [$i++]="M'Sila";
+		$arr [$i++]="Mascara";
+		$arr [$i++]="Ouargla";
+		$arr [$i++]="Oran";
+		$arr [$i++]="El Bayadh";
+		$arr [$i++]="Illizi";
+		$arr [$i++]="Bordj Bou Arreridj";
+		$arr [$i++]="Boumerd&egrave;s";
+		$arr [$i++]="El Tarf";
+		$arr [$i++]="Tindouf";
+		$arr [$i++]="Tissemsilt";
+		$arr [$i++]="El Oued";
+		$arr [$i++]="Khenchela";
+		$arr [$i++]="Souk Ahras";
+		$arr [$i++]="Tipaza";
+		$arr [$i++]="Mila";
+		$arr [$i++]="A&Iuml;n Defla";
+		$arr [$i++]="Na&acirc;ma";
+		$arr [$i++]="A&Iuml;n T&eacute;mouchent";
+		$arr [$i++]="Gharda&Iuml;a";
+		$arr [$i++]="Relizane";
+		return $arr;
+	}
 
 
 }
