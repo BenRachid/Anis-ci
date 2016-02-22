@@ -10,6 +10,7 @@ foreach($css_files as $file): ?>
 <?php foreach($js_files as $file): ?>
 	<script src="<?php echo $file; ?>"></script>
 <?php endforeach; ?>
+
 <style type='text/css'>
 body
 {
@@ -28,13 +29,11 @@ a:hover
 </style>
 </head>
 <body>
-	<div>
-		<a href='<?php echo site_url('ooredoo/Login')?>'>Connexion</a>
-		<a href='<?php echo site_url('ooredoo/pdv_management')?>'>Gestion des points de ventes</a>
-	</div>
+	
 	<div style='height:20px;'></div>  
     <div>
 		<?php echo $output; ?>
     </div>
+	
 </body>
 </html>
