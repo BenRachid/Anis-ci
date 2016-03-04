@@ -53,7 +53,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['register'] = 'ooredoo/register';
 $route['login'] = 'ooredoo/login';
 $route['logout'] = 'ooredoo/logout';
+$route['forgot'] = 'ooredoo/forgot';
+$route['doforgot'] = 'ooredoo/doforgot';
 
 $route['default_controller'] = 'ooredoo';
-$route['404_override'] = '';
+//$route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

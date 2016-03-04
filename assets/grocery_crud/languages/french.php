@@ -25,11 +25,11 @@
 	$lang['form_update_changes'] 	= 'Sauvegarder les modifications';
 	$lang['form_cancel'] 			= 'Annuler';
 	$lang['form_update_loading'] 	= 'En attente, mise à jour des changements...';
-	$lang['update_success_message'] = 'Vos données sont mises à jour avec succès.';
+	$lang['update_success_message'] = 'Vos données ont été mises à jour avec succès.';
 	$lang['form_go_back_to_list'] 	= 'Retourner à la liste';
 
 	$lang['form_add'] 				= 'Ajouter';
-	$lang['insert_success_message'] = 'Vos données sont ajoutées à la base de données avec succès.';
+	$lang['insert_success_message'] = 'Vos données ont été ajoutées à la base de données avec succès.';
 	$lang['form_or']				= 'ou';
 	$lang['form_save'] 				= 'Enregistrer';
 	$lang['form_insert_loading'] 	= 'En attente, entregistrement des données...';
@@ -38,12 +38,12 @@
 	$lang['form_upload_delete'] 	= 'Supprimer';
 	$lang['form_button_clear'] 		= 'Initialiser';
 
-	$lang['delete_success_message'] = 'Vos données sont supprimées de la base de données avec succès.';
-	$lang['delete_error_message'] 	= 'Vos données ne sont pas supprimées de la base de données.';
+	$lang['delete_success_message'] = 'Vos données ont été supprimées de la base de données avec succès.';
+	$lang['delete_error_message'] 	= 'Vos données n\'ont pas été supprimées de la base de données.';
 
 	/* Javascript messages */
-	$lang['alert_add_form']			= 'Les données que vous avez insérées ne sont pas enregistrées.\\nÊtes-vous sûr de vouloir retourner à la liste ?';
-	$lang['alert_edit_form']		= 'Les données que vous avez modifiées ne sont pas enregistrées.\\nÊtes-vous sûr de vouloir retourner à la liste ?';
+	$lang['alert_add_form']			= 'Les données que vous avez insérées n\'ont pas été enregistrées.\\nÊtes-vous sûr de vouloir retourner à la liste ?';
+	$lang['alert_edit_form']		= 'Les données que vous avez modifiées n\'ont pas été enregistrées.\\nÊtes-vous sûr de vouloir retourner à la liste ?';
 	$lang['alert_delete']			= 'Êtes-vous sûr de vouloir supprimer cet enregistrement ?';
 
 	$lang['insert_error']			= 'Une erreur est survenue lors de l\'opération d\'insertion.';
