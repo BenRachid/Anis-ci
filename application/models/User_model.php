@@ -39,7 +39,7 @@ class User_model extends CI_Model {
 			'created_at' => date('Y-m-j H:i:s'),
 		);
 		
-		return $this->db->insert('users', $data);
+		return $this->db->insert('users2', $data);
 		
 	}
 	
@@ -54,7 +54,7 @@ class User_model extends CI_Model {
 	public function resolve_user_login($username, $password) {
 		
 		$this->db->select('password');
-		$this->db->from('users');
+		$this->db->from('users2');
 		$this->db->where('username', $username);
 		$hash = $this->db->get()->row('password');
 		
@@ -72,7 +72,7 @@ class User_model extends CI_Model {
 	public function get_user_id_from_username($username) {
 		
 		$this->db->select('id');
-		$this->db->from('users');
+		$this->db->from('users2');
 		$this->db->where('username', $username);
 
 		return $this->db->get()->row('id');
@@ -88,7 +88,7 @@ class User_model extends CI_Model {
 	 */
 	public function get_user($user_id) {
 		
-		$this->db->from('users');
+		$this->db->from('users2');
 		$this->db->where('id', $user_id);
 		return $this->db->get()->row();
 		
@@ -101,12 +101,27 @@ class User_model extends CI_Model {
 	 * @param mixed $password
 	 * @return string|bool could be a string on success, or bool false on failure
 	 */
+	 
+	Public function hash_login ($password){
+		
+		return password_hash($password, PASSWORD_BCRYPT);
+		
+	}
 	private function hash_password($password) {
 		
 		return password_hash($password, PASSWORD_BCRYPT);
 		
 	}
 	
+	public function reset_password ($user_id,$password) {
+		
+		$data = array(
+			
+	'password'   => $this->hash_password($password));
+			
+		
+	return $this->db->update('users2',$data,array('id' => $user_id));
+	}
 	/**
 	 * verify_password_hash function.
 	 * 

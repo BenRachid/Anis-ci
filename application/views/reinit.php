@@ -1,6 +1,6 @@
 <div class="container">
 		
-		<form class="form-horizontal well" method="post" id="form" action="<?= site_url('doforgot') ?>">
+		<form class="form-horizontal well" method="post" id="form" action="<?= site_url('doreinit') ?>">
 			<fieldset>
 	          <legend>Réinitialisation du mot de passe</legend>
 			
@@ -12,6 +12,7 @@
 				<div class="form-actions">
 					<input type="submit" class="btn btn-primary" value="Reset" />
 				</div>
+				
 				<?php if( isset($info)): ?>
 					<div class="alert alert-success">
 						<?php echo($info) ?>

@@ -55,6 +55,10 @@ $route['login'] = 'ooredoo/login';
 $route['logout'] = 'ooredoo/logout';
 $route['forgot'] = 'ooredoo/forgot';
 $route['doforgot'] = 'ooredoo/doforgot';
+$route['reinit'] = 'ooredoo/reinit';
+$route['doreinit'] = 'ooredoo/doreinit';
+$route['user_management'] = 'ooredoo/user_management';
+
 
 $route['default_controller'] = 'ooredoo';
 //$route['404_override'] = '';

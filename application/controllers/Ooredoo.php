@@ -13,8 +13,8 @@ class Ooredoo extends CI_Controller {
 		$config['protocol'] = 'smtp';
 		$config['smtp_host'] = 'ssl://smtp.googlemail.com';
 		$config['smtp_port'] = '465';
-		$config['smtp_user'] = 'anisskyp@gmail.com';
-		$config['smtp_pass'] = 'anis0007';
+		$config['smtp_user'] = 'ooredootest12345@gmail.com';
+		$config['smtp_pass'] = '@123456789a@';
 		$config['charset'] = 'iso-8859-1';
 		$this->load->library('email',$config);
 		$this->load->library(array('session'));
@@ -29,6 +29,7 @@ class Ooredoo extends CI_Controller {
 	public function index ()
 	{  
 	redirect('ooredoo/pdv_management');
+	//redirect('ooredoo/user_management');
 	}
 
 	
@@ -41,10 +42,10 @@ class Ooredoo extends CI_Controller {
 			$crud->set_theme('datatables');
 			$crud->set_table('nouveaupdv');
 			$crud->set_subject('Point de Vente');
-			$crud->required_fields('pdv','raison_sociale', 'type_pdv','msisdn', 'wilaya_pdv', 'commune_pdv', 'email_pdv', 'code_vendeur', 'code_vendeur', 'Statut','canalVente');
+			$crud->required_fields('pdv','raison_sociale', 'type_pdv','msisdn', 'wilaya_pdv', 'commune_pdv', 'email_pdv', 'code_vendeur', 'code_vendeur', 'Statut','canalVente','nom','prenom','rcnum');
 			$crud->unique_fields('pdv','msisdn', 'code_vendeur','email_pdv');
-			$crud->columns('pdv','raison_sociale', 'type_pdv', 'adresse_pdv', 'wilaya_pdv', 'commune_pdv', 'msisdn', 'autre_telephone_pdv', 'email_pdv', 'code_vendeur','canalVente','Statut','date_creation', 'date_modification');
-			$crud->fields('pdv','raison_sociale', 'type_pdv', 'adresse_pdv', 'wilaya_pdv', 'commune_pdv', 'msisdn', 'autre_telephone_pdv', 'email_pdv','code_vendeur','canalVente', 'Statut');
+			$crud->columns('pdv','raison_sociale', 'type_pdv', 'adresse_pdv', 'wilaya_pdv', 'commune_pdv', 'msisdn', 'autre_telephone_pdv', 'email_pdv', 'code_vendeur','canalVente','Statut','date_creation', 'date_modification','nom','prenom','rcnum');
+			$crud->fields('pdv','raison_sociale', 'type_pdv', 'adresse_pdv', 'wilaya_pdv', 'commune_pdv', 'msisdn', 'autre_telephone_pdv', 'email_pdv','code_vendeur','canalVente', 'Statut','nom','prenom','rcnum');
 			$crud->unset_texteditor('adresse_pdv');
 		
 			
@@ -60,7 +61,10 @@ class Ooredoo extends CI_Controller {
 			$crud->display_as('Statut','Statut PDV');
 			$crud->display_as('commune_pdv','Commune');
 			$crud->display_as('code_vendeur','Code vendeur');
-			$crud->display_as('wilaya_pdv','Wilaya');			
+			$crud->display_as('wilaya_pdv','Wilaya');	
+			$crud->display_as('nom','Nom');
+			$crud->display_as('prenom','Prenom');
+			$crud->display_as('rcnum','Registre commerce');			
 			$crud->display_as('pdv','PDV');
 			$crud->callback_after_insert(array($this, 'log_user_after_insert'));
 			$crud->callback_after_update(array($this, 'log_user_after_update'));
@@ -80,6 +84,77 @@ class Ooredoo extends CI_Controller {
 		}catch(Exception $e){
 			show_error($e->getMessage().' --- '.$e->getTraceAsString());
 		}
+	}
+	
+	public function user_management ()
+	{ $this->load->view('header');
+		try{
+			$crud = new grocery_CRUD();
+
+			$crud->set_theme('datatables');
+			$crud->set_table('users2');
+			$crud->set_subject('un utilisateur');
+			$crud->required_fields('username', 'email','password','user_type');
+			$crud->unique_fields('username', 'email','password');
+			$crud->columns('username', 'email','user_type');
+			$crud->fields('username', 'email','password','user_type');
+			$crud->field_type('user_type','dropdown',array('User'=>'User','Admin' => 'Admin'),'User');
+			//$crud->unset_texteditor('adresse_pdv');
+		
+			
+			$crud->set_rules('email','Email','valid_email');			
+			//$crud->display_as('id','ID');
+			$crud->display_as('username','Username');
+			$crud->display_as('password','Password');
+			$crud->display_as('user_type', 'Type');
+			
+			
+			$crud->callback_after_insert(array($this, 'log_user2_after_insert'));
+			//$crud->callback_after_update(array($this, 'log_user_after_update'));
+			$crud->callback_before_update(array($this,'encrypt_password_callback'));
+	        //$crud->field_type('password','hidden');
+			
+			
+			if((! isset($_SESSION['username']) || $_SESSION['logged_in'] === False) ){
+			$crud->unset_operations();
+			}
+			
+			$crud->unset_export();
+			$crud->unset_print();
+			$output = $crud->render();
+			$this->_example_output($output);
+		}catch(Exception $e){
+			show_error($e->getMessage().' --- '.$e->getTraceAsString());
+		}
+	}
+	function log_user2_after_insert($post_array,$primary_key)
+	{
+		$password = $post_array['password'];
+		var_dump ($post_array);
+		$user_logs_update = array(
+			
+			"date_creation" => date('Y-m-d H:i:s'),
+			"date_modification" => date('Y-m-d H:i:s'),
+			"password" => $this->user_model->hash_login($password)
+			
+			
+		);
+		$this->db->update('users2',$user_logs_update,array('id' => $primary_key));
+		
+		//$this->load->database();
+		//$this->db->get_where('nouveaupdv',array('pdv' => $primary_key));
+		$data = array();
+		$this->db->where('id',$primary_key);
+		$this->db->limit(1);
+		$Q = $this->db->get('users2');
+		if ($Q->num_rows() < 1){
+			show_Error("No Result");
+			return false;
+		}
+		$data = $Q->row_array();
+		$this->send_Create_Mail($primary_key, $data['email_pdv'],$password);
+		$Q->free_result();
+		return true;
 	}
 	
 	function encrypt_password_callback($post_array, $primary_key) {
@@ -105,10 +180,11 @@ class Ooredoo extends CI_Controller {
 	{
 		$password=$this->generatePwd();
 		$user_logs_update = array(
-			"pdv" => $primary_key,
+			
 			"date_creation" => date('Y-m-d H:i:s'),
 			"date_modification" => date('Y-m-d H:i:s'),
 			"password" => $password,
+			
 		);
 		$this->db->update('nouveaupdv',$user_logs_update,array('pdv' => $primary_key));
 		
@@ -148,21 +224,36 @@ class Ooredoo extends CI_Controller {
 		}
 		return $pwd;
 	}
-	
-	protected function send_Create_Mail($pdv, $email, $password){
+	protected function configure_Mail($from, $from_code, $to, $subject, $message, $alt)
+	{
 		$this->email->set_newline("\r\n");
-		$this->email->from('ooredoo@gmail.com', 'Ooredoo');
-		$this->email->to($email); 
+		$this->email->from($from, $from_code);
+		$this->email->to($to); 
 		//$this->email->cc('Manager@Ooredoo.com'); 
 		//$this->email->bcc('them@their-example.com'); 
-		$this->email->subject('Activation de compte PDV');
-		$this->email->message("Bonjour,\r\nVotre Compte d'acc&egrave;s au point de vente ".$pdv." est actif, votre mot de passe est: ".$password."\r\nBien à vous\nOoredoo.");	
-		$this->email->set_alt_message('Bonjour, votre mot de passe pour acc&eacute;der au point de vente est : '.$password);
-		// if(!$this->email->send())
-		// {
-			// show_Error($this->email->print_debugger());
-		// }
-
+		$this->email->subject($subject);
+		$this->email->message($message);	
+		$this->email->set_alt_message($alt);
+		if(!$this->email->send())
+		{
+			return false;
+		}
+		return true;
+	}
+	protected function send_Create_Mail($pdv, $email, $password){
+		$message="Bonjour,\r\nVotre Compte d'accés au point de vente est actif, votre mot de passe est: ".$password."\r\nBien à vous\nOoredoo.";
+		$alt='Bonjour, votre mot de passe pour accéder au point de vente est : '.$password;
+		$this->configure_Mail('ooredoo@gmail.com', 'Ooredoo',$email,'Activation de compte PDV',$message, $alt);
+	}
+	protected function send_Reset_Pdv($pdv, $email, $password){
+		$message="Bonjour,\r\L'accés au point de vente a été réenitialisé, votre nouveau mot de passe est: ".$password."\r\n Bien à vous\nOoredoo.";
+		$alt='Bonjour, votre mot de passe pour accéder au point de vente est : '.$password;
+		$this->configure_Mail('ooredoo@gmail.com', 'Ooredoo',$email,'Réactivation du compte PDV',$message, $alt);
+	}
+	protected function send_Reset_Password($email, $password){
+		$message="Bonjour,\r\nVotre nouveau mot de passe est: ".$password."\r\nBien à vous\nOoredoo.";
+		$alt='Bonjour, votre mot de passe pour accéder a l\'application est : '.$password;
+		$this->configure_Mail('ooredoo@gmail.com', 'Ooredoo',$email,'Réinitialisation',$message, $alt);
 	}
 	// public function date_Start($value, $row)
 	// {
@@ -322,6 +413,7 @@ class Ooredoo extends CI_Controller {
 				
 				$user_id = $this->user_model->get_user_id_from_username($username);
 				$user    = $this->user_model->get_user($user_id);
+		
 				
 				// set session user datas
 				$_SESSION['user_id']      = (int)$user->id;
@@ -329,6 +421,8 @@ class Ooredoo extends CI_Controller {
 				$_SESSION['logged_in']    = (bool)true;
 				$_SESSION['is_confirmed'] = (bool)$user->is_confirmed;
 				$_SESSION['is_admin']     = (bool)$user->is_admin;
+				$_SESSION['user_type']     = (bool)$user->user_typ;
+				
 				
 				redirect('/');
 				
@@ -402,7 +496,7 @@ class Ooredoo extends CI_Controller {
 	}
 		public function doforgot()
 	{ 
-		$this->load->helper('url');
+	
 		$email= $_POST['email'];
 		//$q = $this->db->query("select * from users where email='" . $email . "'");
 		$this->db->select('id,email'); 
@@ -425,18 +519,67 @@ class Ooredoo extends CI_Controller {
 		
 		
 	} 
-	private function resetpassword($user)
+	 function resetpassword($user)
 	{
 		date_default_timezone_set('GMT');
 		$this->load->helper('string');
-		$password= random_string('alnum', 16);
-		$this->db->where('id', $user->id);
-		$this->db->update('users',array('password'=>MD5($password)));
-		$this->load->library('email');
+		$password = $this->generatePwd();
+		 //var_dump ( $this );
+		$this->user_model->reset_password($user->id, $password);
+		$this->send_Reset_Password($user->email, $password);
 		//$this->email->from('cantreply@youdomain.com', 'Your name');
 		//$this->email->to($user->email); 	
 		//$this->email->subject('Password reset');
 		//$this->email->message('You have requested the new password, Here is you new password:'. $password);	
 		//$this->email->send();
+	} 
+	public function reinit()
+	{  
+
+	$data = Array();
+		
+		if (isset($_GET['info'])) {
+               $data['info'] = $_GET['info'];
+              }
+		if (isset($_GET['error'])) {
+              $data['error'] = $_GET['error'];
+              }
+		$this->load->view('header');
+		$this->load->view('reinit',$data);
+	
+	}
+	
+	public function doreinit()
+	{ 
+	
+		$email= $_POST['email'];
+		//$q = $this->db->query("select * from users where email_pdv='" . $email . "'");
+		$this->db->select('pdv,email_pdv'); 
+        $this->db->where('email_pdv', $email); 
+		$q= $this->db->get('nouveaupdv');
+		$row = $q->row();
+
+        if (isset($row))
+       // if ($q->num_rows > 0)
+		   {
+            $r = $q->result();
+            $user=$r[0];
+			
+			$password=$this->generatePwd();
+		$user_logs_update = array(
+			"pdv" => $user->pdv,
+			"date_modification" => date('Y-m-d H:i:s'),
+			"password" => $password
+		);
+		$this->db->update('nouveaupdv',$user_logs_update,array('pdv' => $user->pdv));
+		$this->send_Reset_Pdv($user->pdv, $user->email_pdv, $password);
+			$info= "Password has been reset and has been sent to email pdv: ". $email;
+			redirect('ooredoo/reinit?info=' . $info, 'refresh');
+        }
+		$error= "The email pdv you entered not found on our database ";
+		//var_dump ( $q );
+		redirect('ooredoo/reinit?error=' . $error, 'refresh');
+		
+		
 	} 
 }

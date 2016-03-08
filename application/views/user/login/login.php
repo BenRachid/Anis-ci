@@ -15,23 +15,28 @@
 				</div>
 			</div>
 		<?php endif; ?>
-		<div class="col-md-12">
+		<div class="form-horizontal wel">
 			<div class="page-header">
 				<h1>Login</h1>
 			</div>
+			
 			<?= form_open() ?>
-				<div class="form-group">
+			<fieldset>
+				<div class="control-group">
 					<label for="username">Username</label>
 					<input type="text" class="form-control" id="username" name="username" placeholder="Votre username">
 				</div>
-				<div class="form-group">
+				<div class="control-group">
 					<label for="password">Password</label>
 					<input type="password" class="form-control" id="password" name="password" placeholder="Votre password">
 				</div>
-				<div class="form-group">
+				
+				</br>
+				<div class="form-action">
 					<input type="submit" class="btn btn-default" value="Login">
 					<a href="<?= site_url('forgot') ?>">Mot de passe oublié</a>
 				</div>
+			</fieldset>
 			</form>
 		</div>
 	</div><!-- .row -->
