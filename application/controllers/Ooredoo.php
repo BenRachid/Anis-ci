@@ -130,7 +130,6 @@ class Ooredoo extends CI_Controller {
 	function log_user2_after_insert($post_array,$primary_key)
 	{
 		$password = $post_array['password'];
-		var_dump ($post_array);
 		$user_logs_update = array(
 			
 			"date_creation" => date('Y-m-d H:i:s'),
@@ -501,7 +500,7 @@ class Ooredoo extends CI_Controller {
 		//$q = $this->db->query("select * from users where email='" . $email . "'");
 		$this->db->select('id,email'); 
         $this->db->where('email', $email); 
-		$q= $this->db->get('users');
+		$q= $this->db->get('users2');
 		$row = $q->row();
 
         if (isset($row))

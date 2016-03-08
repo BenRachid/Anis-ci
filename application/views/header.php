@@ -40,8 +40,8 @@
 		                    <li><a href='<?php echo site_url('')?>'>Gestion des points de ventes</a></li>
 						<?php if (isset($_SESSION['username']) && $_SESSION['logged_in'] === true) : ?>
 						<li><a href="<?= site_url('reinit') ?>">Réinitialiser l'acces </a></li>
-						<li><a href='<?php echo site_url('user_management')?>'>Gestion des utilisateurs</a></li>
-							<li><a href="<?= site_url('register') ?>">Register</a></li>
+						<li><a href='<?php echo site_url('ooredoo/user_management')?>'>Gestion des utilisateurs</a></li>
+							<!--<li><a href="<?= site_url('register') ?>">Register</a></li>-->
 							<li><a href="<?= site_url('logout') ?>">Logout</a></li>
 						
 							
