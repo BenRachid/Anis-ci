@@ -60,6 +60,6 @@ $route['doreinit'] = 'ooredoo/doreinit';
 
 
 
-$route['default_controller'] = 'ooredoo';
+$route['default_controller'] = 'Ooredoo';
 //$route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

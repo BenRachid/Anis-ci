@@ -2,6 +2,11 @@
 
 class Ooredoo extends CI_Controller {
 
+	private function log_action ($performer, $action)
+	{
+		
+		
+	}
 	public function __construct()
 	{
 		parent::__construct();
@@ -28,14 +33,18 @@ class Ooredoo extends CI_Controller {
 
 	public function index ()
 	{  
-	redirect('ooredoo/pdv_management');
+	redirect('login');
 	//redirect('ooredoo/user_management');
 	}
 
 	
 
 	public function pdv_management ()
-	{ $this->load->view('header');
+	{ if ($_SESSION ["user_type"])
+		{ 
+	$this->load->view('header');
+	//var_dump ($_SESSION);
+	//var_dump($_SESSION);
 		try{
 			$crud = new grocery_CRUD();
 
@@ -84,7 +93,13 @@ class Ooredoo extends CI_Controller {
 		}catch(Exception $e){
 			show_error($e->getMessage().' --- '.$e->getTraceAsString());
 		}
+		}
+	else {
+		redirect ('/');
 	}
+	}
+
+	
 	
 	public function user_management ()
 	{ $this->load->view('header');
@@ -118,7 +133,6 @@ class Ooredoo extends CI_Controller {
 			if((! isset($_SESSION['username']) || $_SESSION['logged_in'] === False) ){
 			$crud->unset_operations();
 			}
-			
 			$crud->unset_export();
 			$crud->unset_print();
 			$output = $crud->render();
@@ -151,7 +165,7 @@ class Ooredoo extends CI_Controller {
 			return false;
 		}
 		$data = $Q->row_array();
-		$this->send_Create_Mail($primary_key, $data['email_pdv'],$password);
+		$this->send_Create_Mail($primary_key, $data['email'],$password);
 		$Q->free_result();
 		return true;
 	}
@@ -177,6 +191,7 @@ class Ooredoo extends CI_Controller {
 	
 	function log_user_after_insert($post_array,$primary_key)
 	{
+		//$_SESSION['dumping']=$post_array;
 		$password=$this->generatePwd();
 		$user_logs_update = array(
 			
@@ -185,21 +200,22 @@ class Ooredoo extends CI_Controller {
 			"password" => $password,
 			
 		);
-		$this->db->update('nouveaupdv',$user_logs_update,array('pdv' => $primary_key));
+		
+		$this->db->update('nouveaupdv',$user_logs_update,array('pdv' => $post_array['pdv']));
 		
 		//$this->load->database();
 		//$this->db->get_where('nouveaupdv',array('pdv' => $primary_key));
 		$data = array();
-		$this->db->where('pdv',$primary_key);
-		$this->db->limit(1);
-		$Q = $this->db->get('nouveaupdv');
-		if ($Q->num_rows() < 1){
-			show_Error("No Result");
-			return false;
-		}
-		$data = $Q->row_array();
-		$this->send_Create_Mail($primary_key, $data['email_pdv'],$password);
-		$Q->free_result();
+		
+
+		$hist = array(
+			'action'   => $_SESSION['username']." a cree le compte ".$post_array['pdv'],
+			'performer'   => 0,
+			'date' => date('Y-m-j H:i:s')
+		);
+		
+		$this->send_Create_Mail($post_array['pdv'], $post_array['email_pdv'],$password);
+		$this->db->insert('logs', $hist);
 		return true;
 	}
 	function log_user_after_update($post_array,$primary_key)
@@ -420,10 +436,10 @@ class Ooredoo extends CI_Controller {
 				$_SESSION['logged_in']    = (bool)true;
 				$_SESSION['is_confirmed'] = (bool)$user->is_confirmed;
 				$_SESSION['is_admin']     = (bool)$user->is_admin;
-				$_SESSION['user_type']     = (bool)$user->user_typ;
+				$_SESSION['user_type']     = ($user->user_type==='Admin');
 				
 				
-				redirect('/');
+				redirect('/ooredoo/pdv_management');
 				
 				// user login ok
 				// $this->load->view('header');
